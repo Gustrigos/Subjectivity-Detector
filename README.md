@@ -1,4 +1,4 @@
-# Objectivity-Detector
+# Subjectivity-Detector
 Natural Language Processing project written in Python 3.6.5 to determine whether a body of text is written objectively or subjectively. 
 
 Following research by Rizk and Awad (2018) on subjectivity analysis of sports articles, I decided to integrate a supervised support vector machine model with a linear kernel instead of a syntactic genetic algorithm to process the labeled training examples and the extracted features to classify wheter the given input belongs to sports articles that were written subjectively or objectively by the authors.
