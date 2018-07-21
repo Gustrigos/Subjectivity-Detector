@@ -8,7 +8,7 @@ Rizk and Awad (2018) discuss that the effectiveness of the classifier is through
 They determine the use of certain syntactic attributes as a measure of indication of objectivity and subjectivity in sport articles:
 
 Objectivity:
-- Quoatations.
+- Quotations.
 - Past tense verbs.
 - Third person pronouns.
 - Numerical values and dates.
