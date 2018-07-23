@@ -33,9 +33,10 @@ The following libraries need to be installed and imported:
 numpy: for linear algebra (creating vectors, matrices, and cross-operations between them).
 matplotlib: for plotting learning parameters.
 scipy.io: for input and output user's interaction.
-Sklearn: for the Support Vector Machine model.
-Re: for text preprocessing and regular expressions.
-Pandas: For loading and organizing the data set. 
+sklearn: for the Support Vector Machine model.
+re: for text preprocessing and regular expressions.
+pandas: for loading and organizing the data set. 
+nltk: for the tokenization of words.
 
 Acknowledgements:
 To Yara Rizk and Mariette Awad (American University of Beirut, IEEE Electrical & Computer Engineering) for the dataset and the research findings. David Kaleko (columbia school of Fu Foundation School of Engineering and Applied Science) for the model preset. Andrew Ng (Stanford University Computer Science Department) for the intuition behind the model.
