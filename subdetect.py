@@ -43,16 +43,16 @@ def  preProcess ( article ):
 	article = re.sub('[0-9]+','number', article)
 
     # Anything ending with '!' replaced with 'exmark'
-	article = re.sub('[!]+', 'exmark', article)
+	article = re.sub('[^\s]+[!]+', 'exmark', article)
 
 	 # Anything ending with '?' replaced with 'questmark'
-	article = re.sub('[\?]+', 'questmark', article)
+	article = re.sub('[^\s]+[\?]+', 'questmark', article)
 
     # Strings with "@" in the middle are replaced to 'emailaddr'
 	article = re.sub('[^\s]+@[^\s]+', 'emailaddr', article)
     
     # Various monetary signs get replaced with 'monetaryval'
-	article = re.sub('[$|€|¥|£]+', 'monetaryval', article)
+	article = re.sub('[$|€|¥|£]+[^\s]+', 'monetaryval', article)
     
 	return article
 
