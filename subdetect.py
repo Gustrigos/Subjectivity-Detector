@@ -1,3 +1,5 @@
+# Support Vector Machine for Text Classification
+
 import os
 import re
 import numpy as np
@@ -7,6 +9,7 @@ from sklearn import svm
 import pandas as pd
 import nltk, nltk.stem.porter
 from nltk.tokenize import word_tokenize
+import collections
 
 print('Objective/ Subjective Text Classification')
 
@@ -20,7 +23,7 @@ data_dir = 'dataclassified/'
 # read objective and subjective articles into arrays (encoded in latin-1)
 objective_articles = []
 for objective_article in os.listdir(data_dir+'objective_1/'):
-  objective_articles.append(open(data_dir+ 'objective_1/' + objective_article, 'r', encoding= 'latin-1').read())
+ 	objective_articles.append(open(data_dir+ 'objective_1/' + objective_article, 'r', encoding= 'latin-1').read())
 
 subjective_articles = []
 for subjective_article in os.listdir(data_dir + 'subjective_1/'):
@@ -62,12 +65,8 @@ def article2TokenList( raw_article ):
 
 	article = preProcess( raw_article )
 
-	# Split the article into individual words (tokens) (split by many delimeters)
+	# Split the article into individual words (tokens) 
 	tokens = word_tokenize(article)
-
-	# loop over each word (token) and use a stemmer to shorten it,
-	# then check if the word is in the vocab_list.  
-	# If true, store what index in the vocab_list the word is
 
 	tokenlist = []
 
@@ -80,11 +79,17 @@ def article2TokenList( raw_article ):
 		if not len(token): continue
 
 	# Filter words with POS tagging and store them in a list.
-	allowed_word_types = ["VBD", "PRP", "PRP$", "JJR", "RBR", "JJS", "RBS"]
-	extrafeatures = ["quote", "number", "ex-mark", "quest-mark", "monetaryval"]
+	allowed_word_types = ["VBD", "PRP", "PRP$", "JJR", "RBR", "JJS", "RBS", "RB", "JJ", "UH"]
+	extrafeatures = ["quote", "number", "exmark", "questmark", "monetaryval"]
 	pos = nltk.pos_tag( tokens )
 	for w in pos:
-		tokenlist.append(w[0])
+		if w[1] in allowed_word_types:
+			tokenlist.append(w[0])
+		if w[0] in extrafeatures:
+			tokenlist.append(w[0])
+
+	# print(tokenlist)
+	# print("number of tokenlist: ", len(tokenlist))
 
 	return tokenlist
 
@@ -100,17 +105,21 @@ print('The following regards the simplification of articles through the tokenaza
 # Tokenize each word and count it. 
 total_objective_article = [' '.join(objective_articles[:]) ]
 total_subjective_article = [' '.join(subjective_articles[:])]
-total_corpus = total_objective_article[0]+ total_subjective_article[0]
+total_corpus = total_objective_article[0] + total_subjective_article[0]
 
-word_counts = Counter(article2TokenList(total_corpus))
+filtered_corpus = article2TokenList(total_corpus)
+word_counts = collections.Counter(filtered_corpus)
 
-print ('The total number of unique filtered tokens is: ')
-print (len(word_counts))
+# print("filtered_corpus: ", filtered_corpus)
+# print("len of filtered: ", len(filtered_corpus))
+
+# print("wordcounts: ", word_counts)
+print ('The total number of unique filtered tokens is: ', len(word_counts))
 print ('The twenty most common stemmed tokens are:')
 print ([ str(x[0]) for x in word_counts.most_common(20) ])
 
 # store tokens into a enumerated matrix. 
-common_words = [ str(x[0]) for x in word_counts.most_common(20000) ]
+common_words = [ str(x[0]) for x in word_counts.most_common(15000) ]
 vocab_dict = dict((item, i) for i, item in enumerate(common_words))
 
 # 2.2) Articles into Indices 
@@ -130,3 +139,5 @@ def article2FeatureVector( raw_article, vocab_dict ):
 	for idx in vocab_indices:
 		result[idx] = 1
 	return result
+
+
