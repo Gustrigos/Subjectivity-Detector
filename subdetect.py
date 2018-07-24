@@ -140,4 +140,113 @@ def article2FeatureVector( raw_article, vocab_dict ):
 		result[idx] = 1
 	return result
 
+# 3) Training SVM for objective/ subjective classification
+
+# 3.1) Training Set, Cross validation set, and test set
+# Read in the training set and test set provided.
+
+# Training set X matrix and y vector by 60% of data.
+n_objective_train = int(len(objective_articles)*0.6)
+n_subjective_train = int(len(subjective_articles)*0.6)
+
+objective_train = [article2FeatureVector(x, vocab_dict)
+					for x in objective_articles[:n_objective_train]]
+subjective_train = [article2FeatureVector(x, vocab_dict)
+					for x in subjective_articles[:n_subjective_train]]
+
+Xtrain = np.concatenate(objective_train + subjective_train, axis=1).T
+ytrain = np.concatenate(
+	(np.zeros((n_objective_train,1)),
+	np.ones((n_subjective_train,1))
+	),axis=0)
+
+# Cross Validation set X matric and y vector by 20% of data.
+n_objective_cv = int(len(objective_articles)*0.2)
+n_subjective_cv = int(len(subjective_articles)*0.2)
+
+objective_cv = [article2FeatureVector( x, vocab_dict ) 
+                 for x in objective_articles[n_objective_train:n_objective_train+n_objective_cv]]
+subjective_cv    = [article2FeatureVector( x, vocab_dict ) 
+                 for x in subjective_articles [n_subjective_train:n_subjective_train+n_subjective_cv]]
+
+Xcv = np.concatenate(objective_cv + subjective_cv, axis=1).T
+ycv = np.concatenate(
+	(np.zeros((n_objective_cv,1)),
+	np.ones((n_subjective_cv,1))
+	),axis=0)
+
+# Test set X matric and y vector by the remaining data.
+n_objective_test = len(objective_articles) - n_objective_train - n_objective_cv
+n_subjective_test = len(subjective_articles) - n_subjective_train - n_subjective_cv
+
+objective_test = [article2FeatureVector( x, vocab_dict ) 
+                 for x in objective_articles[-n_objective_test:]]
+subjective_test    = [article2FeatureVector( x, vocab_dict ) 
+                 for x in subjective_articles [-n_subjective_test:]]
+
+Xtest = np.concatenate(objective_test + subjective_test, axis=1).T
+ytest = np.concatenate(
+	(np.zeros((n_objective_test,1)),
+	np.ones((n_subjective_test,1))
+	),axis=0)
+
+print("Choosing the Best SVM's parameters")
+input('Press <Enter> to continue')
+print('The following is a graph visualization of the classification error(%) against C value of both CV set and Training Set: ')
+
+# 3.2) SVM parameters and model
+# Cross_validation set will help choose parameter C. 
+# Creating several instances of Sklearn linear kernel SVMs each with different CS. 
+# Evaluate the performance of each on the CV set.
+# choose the instance with the best performance. 
+
+myCs = [ 0.0001, 0.001, 0.01, 0.1, 1.0, 10.0 ]
+myErrors = []
+myErrors_train = []
+
+for myC in myCs:
+    
+    # Make an instance of an SVM with C=myC and 'linear' kernel
+    linear_svm = svm.SVC(C=myC, kernel='linear')
+
+    # Fit the SVM to our Xtrain matrix, given the labels ytrain
+    linear_svm.fit( Xtrain, ytrain.flatten() )
+    
+    # Determine how well this SVM works by computing the
+    # classification error on the cross-validation set
+    cv_predictions = linear_svm.predict(Xcv).reshape((ycv.shape[0],1))
+    cv_error = 100. * float(sum(cv_predictions != ycv))/ycv.shape[0]
+    myErrors.append( cv_error )
+
+    # While we're at it, do the same for the training set error
+    train_predictions = linear_svm.predict(Xtrain).reshape((ytrain.shape[0],1))
+    train_error = 100. * float(sum(train_predictions != ytrain))/ytrain.shape[0]
+    myErrors_train.append( train_error )
+
+# Compare bias and variance with Training set and Cross Validation set respective error.
+# The graph should be at its minimum error and avoid either of the sets to start increasing.
+plt.figure(figsize=(8,5))
+plt.plot(myCs,myErrors,'ro--',label='Cross Validation Set Error')
+plt.plot(myCs,myErrors_train,'bo--',label='Training Set Error')
+plt.grid(True,'both')
+plt.xlabel('$C$ Value',fontsize=16)
+plt.ylabel('Classification Error [%]',fontsize=14)
+plt.title('Best $C$ Value',fontsize=18)
+plt.xscale('log')
+myleg = plt.legend()
+
+plt.show()
+
+
+print(" SVM's Predictive Accuracy for Test Set")
+input('Press <Enter> to continue')
+print('The following is the Test set accuracy from the SVM: ')
+
+# 4) Testing predicitve accuracy for the Test set. 
+best_svm = svm.SVC(C=0.1, kernel='linear')
+best_svm.fit( Xtrain, ytrain.flatten() )
+
+test_predictions = best_svm.predict(Xtest).reshape((ytest.shape[0],1))
+test_acc = 100. * float(sum(test_predictions == ytest))/ytest.shape[0]
+print ('Test set accuracy = %0.2f%%' % test_acc)
 
