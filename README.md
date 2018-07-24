@@ -39,4 +39,4 @@ pandas: for loading and organizing the data set.
 nltk: for the tokenization of words.
 
 Acknowledgements:
-To Yara Rizk and Mariette Awad (American University of Beirut, IEEE Electrical & Computer Engineering) for the dataset and the research findings. David Kaleko (columbia school of Fu Foundation School of Engineering and Applied Science) for the model preset. Andrew Ng (Stanford University Computer Science Department) for the intuition behind the model.
+To Yara Rizk and Mariette Awad (American University of Beirut, IEEE Electrical & Computer Engineering) for the dataset and the research findings. David Kaleko (columbia school of Fu Foundation School of Engineering and Applied Science) for the model pipeline. Andrew Ng (Stanford University Computer Science Department) for the intuition behind the model.
