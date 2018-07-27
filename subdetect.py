@@ -160,7 +160,7 @@ ytrain = np.concatenate(
 	np.ones((n_subjective_train,1))
 	),axis=0)
 
-# Cross Validation set X matric and y vector by 20% of data.
+# Cross Validation set X matrix and y vector by 20% of data.
 n_objective_cv = int(len(objective_articles)*0.2)
 n_subjective_cv = int(len(subjective_articles)*0.2)
 
@@ -175,7 +175,7 @@ ycv = np.concatenate(
 	np.ones((n_subjective_cv,1))
 	),axis=0)
 
-# Test set X matric and y vector by the remaining data.
+# Test set X matrix and y vector by the remaining data.
 n_objective_test = len(objective_articles) - n_objective_train - n_objective_cv
 n_subjective_test = len(subjective_articles) - n_subjective_train - n_subjective_cv
 
